@@ -64,7 +64,7 @@ export CATTLE_FEATURES=${CATTLE_FEATURES}
 # copied to the in-cluster registry during test setup below.
 source ./scripts/version
 # defaulting to :head (matching the hardcoded value within rancher) if CATTLE_AGENT_IMAGE or TAG is not specified
-export CATTLE_AGENT_IMAGE=${CATTLE_AGENT_IMAGE:-rancher/rancher-agent:${TAG:-head}}
+export CATTLE_AGENT_IMAGE="rancher/rancher-agent:head"
 echo "Using Rancher agent image $CATTLE_AGENT_IMAGE"
 
 eval "$(grep '^ENV CATTLE_SYSTEM_AGENT' package/Dockerfile | awk '{print "export " $2 "=" $3}')"
@@ -172,7 +172,7 @@ push_cattle_agent_image()
 # Otherwise, build_and_run_rancher will also compile Rancher, overly elongating the
 # time before Rancher is ready and therefore causing flakiness of the health check below.
 
-container_id=$(docker create rancher/rancher:$TAG)
+container_id=$(docker create rancher/rancher:$TAG || true)
 if [ -z $container_id ]; then
   echo "building rancher from source - no preloaded container image available"
   ./scripts/build-server
